@@ -1,0 +1,1 @@
+Just a trainer for Zabbix Trigger Expressions
