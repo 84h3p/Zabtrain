@@ -1,0 +1,662 @@
+[
+  {
+    "desc": "Хост srv1. Написать триггер: агент недоступен (item agent.ping вернул 0).",
+    "hint": "Функция last() без периода, сравнение с 0. Ключ item — agent.ping.",
+    "regex": "^last\\(/srv1/agent\\.ping\\)=0$",
+    "example": "last(/srv1/agent.ping)=0"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: средняя загрузка CPU (item system.cpu.load) за последние 5 минут больше 5.",
+    "hint": "Используйте avg() с периодом 5m.",
+    "regex": "^avg\\(/srv1/system\\.cpu\\.load,5m\\)>5$",
+    "example": "avg(/srv1/system.cpu.load,5m)>5"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: свободное место на разделе / (item vfs.fs.size[/,pfree]) меньше 10%.",
+    "hint": "Используйте last(), ключ уже содержит параметры: vfs.fs.size[/,pfree].",
+    "regex": "^last\\(/srv1/vfs\\.fs\\.size\\[/,pfree\\]\\)<10$",
+    "example": "last(/srv1/vfs.fs.size[/,pfree])<10"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: нет данных по item agent.ping в течение последних 10 минут.",
+    "hint": "Функция nodata(item,период) возвращает 1, если данных не поступало.",
+    "regex": "^nodata\\(/srv1/agent\\.ping,10m\\)=1$",
+    "example": "nodata(/srv1/agent.ping,10m)=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: температура (item sensor.temp.value) превышала 80 хотя бы раз за последние 15 минут.",
+    "hint": "Используйте max() с периодом 15m.",
+    "regex": "^max\\(/srv1/sensor\\.temp\\.value,15m\\)>80$",
+    "example": "max(/srv1/sensor.temp.value,15m)>80"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: доступная память (item vm.memory.size[pavailable]) сейчас ниже 20%.",
+    "hint": "Текущее значение — last() без периода.",
+    "regex": "^last\\(/srv1/vm\\.memory\\.size\\[pavailable\\]\\)<20$",
+    "example": "last(/srv1/vm.memory.size[pavailable])<20"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: входящий трафик (item net.if.in[eth0]) изменился относительно предыдущего значения больше чем на 1000000.",
+    "hint": "Функция change() считает разницу между текущим и предыдущим значением.",
+    "regex": "^change\\(/srv1/net\\.if\\.in\\[eth0\\]\\)>1000000$",
+    "example": "change(/srv1/net.if.in[eth0])>1000000"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: средняя загрузка (item cpu.util) за последний час выше 90%.",
+    "hint": "avg() с периодом 1h.",
+    "regex": "^avg\\(/srv1/cpu\\.util,1h\\)>90$",
+    "example": "avg(/srv1/cpu.util,1h)>90"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: сервис (item net.tcp.service[http]) недоступен в последних 3 проверках подряд (минимум за последние 3 значения равен 0).",
+    "hint": "Используйте min() со счётным периодом #3.",
+    "regex": "^min\\(/srv1/net\\.tcp\\.service\\[http\\],#3\\)=0$",
+    "example": "min(/srv1/net.tcp.service[http],#3)=0"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: в последних 5 записях лога (item log_item) встречается слово ERROR.",
+    "hint": "Функция find(item,#5,\"like\",\"ERROR\") ищет совпадение по последним 5 значениям. Строковые параметры — в двойных кавычках.",
+    "regex": "^find\\(/srv1/log_item,#5,\"like\",\"ERROR\"\\)=1$",
+    "example": "find(/srv1/log_item,#5,\"like\",\"ERROR\")=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: текущая загрузка CPU (item system.cpu.load[,avg1]) больше 8.",
+    "hint": "Функция last() без периода. Ключ содержит параметры: system.cpu.load[,avg1].",
+    "regex": "^last\\(/srv1/system\\.cpu\\.load\\[,avg1\\]\\)>8$",
+    "example": "last(/srv1/system.cpu.load[,avg1])>8"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: свободное место в разделе /var (item vfs.fs.size[/var,pfree]) меньше 15%.",
+    "hint": "last() без периода, ключ vfs.fs.size[/var,pfree].",
+    "regex": "^last\\(/srv1/vfs\\.fs\\.size\\[/var,pfree\\]\\)<15$",
+    "example": "last(/srv1/vfs.fs.size[/var,pfree])<15"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: доступная память (item vm.memory.size[pavailable]) сейчас меньше 10%.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/srv2/vm\\.memory\\.size\\[pavailable\\]\\)<10$",
+    "example": "last(/srv2/vm.memory.size[pavailable])<10"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: свободных inode на разделе / (item vfs.fs.inode[/,pfree]) меньше 5%.",
+    "hint": "last() без периода, ключ vfs.fs.inode[/,pfree].",
+    "regex": "^last\\(/srv2/vfs\\.fs\\.inode\\[/,pfree\\]\\)<5$",
+    "example": "last(/srv2/vfs.fs.inode[/,pfree])<5"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: число подключений к MySQL (item mysql.status[Threads_connected]) больше 150.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/db1/mysql\\.status\\[Threads_connected\\]\\)>150$",
+    "example": "last(/db1/mysql.status[Threads_connected])>150"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: свободное место в разделе /var/lib/mysql (item vfs.fs.size[/var/lib/mysql,pfree]) меньше 10%.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/db1/vfs\\.fs\\.size\\[/var/lib/mysql,pfree\\]\\)<10$",
+    "example": "last(/db1/vfs.fs.size[/var/lib/mysql,pfree])<10"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: веб-сервер недоступен (item net.tcp.service[http] вернул 0).",
+    "hint": "last() без периода, сравнение с 0.",
+    "regex": "^last\\(/web1/net\\.tcp\\.service\\[http\\]\\)=0$",
+    "example": "last(/web1/net.tcp.service[http])=0"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: процесс nginx не запущен (item proc.num[nginx] равен 0).",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/web1/proc\\.num\\[nginx\\]\\)=0$",
+    "example": "last(/web1/proc.num[nginx])=0"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: доступная память (item vm.memory.size[pavailable]) сейчас меньше 20%.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/ws1/vm\\.memory\\.size\\[pavailable\\]\\)<20$",
+    "example": "last(/ws1/vm.memory.size[pavailable])<20"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: загрузка CPU (item system.cpu.util) сейчас больше 90%.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/ws1/system\\.cpu\\.util\\)>90$",
+    "example": "last(/ws1/system.cpu.util)>90"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: устройство не отвечает на ping (item icmpping вернул 0).",
+    "hint": "last() без периода, сравнение с 0.",
+    "regex": "^last\\(/sw1/icmpping\\)=0$",
+    "example": "last(/sw1/icmpping)=0"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: почтовый сервис недоступен (item net.tcp.service[smtp] вернул 0).",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/mail1/net\\.tcp\\.service\\[smtp\\]\\)=0$",
+    "example": "last(/mail1/net.tcp.service[smtp])=0"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: очередь писем (item mail.queue.size) больше 500.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/mail1/mail\\.queue\\.size\\)>500$",
+    "example": "last(/mail1/mail.queue.size)>500"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: свободного swap (item system.swap.size[,pfree]) меньше 50%.",
+    "hint": "last() без периода, ключ system.swap.size[,pfree].",
+    "regex": "^last\\(/srv1/system\\.swap\\.size\\[,pfree\\]\\)<50$",
+    "example": "last(/srv1/system.swap.size[,pfree])<50"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: температура (item sensor.temp.value) сейчас больше 85.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/srv1/sensor\\.temp\\.value\\)>85$",
+    "example": "last(/srv1/sensor.temp.value)>85"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: аптайм системы (item system.uptime) меньше 300 секунд (был перезапуск).",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/srv2/system\\.uptime\\)<300$",
+    "example": "last(/srv2/system.uptime)<300"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: число активных запросов MySQL (item mysql.status[Threads_running]) больше 20.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/db1/mysql\\.status\\[Threads_running\\]\\)>20$",
+    "example": "last(/db1/mysql.status[Threads_running])>20"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: свободное место в корневом разделе (item vfs.fs.size[/,pfree]) меньше 20%.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/web1/vfs\\.fs\\.size\\[/,pfree\\]\\)<20$",
+    "example": "last(/web1/vfs.fs.size[/,pfree])<20"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: свободное место на диске C: (item vfs.fs.size[C:,pfree]) меньше 10%.",
+    "hint": "last() без периода, ключ vfs.fs.size[C:,pfree].",
+    "regex": "^last\\(/ws1/vfs\\.fs\\.size\\[C:,pfree\\]\\)<10$",
+    "example": "last(/ws1/vfs.fs.size[C:,pfree])<10"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: интерфейс eth0 в состоянии down (гипотетический item if.status[eth0] равен 2).",
+    "hint": "last() без периода, сравнение с 2.",
+    "regex": "^last\\(/sw1/if\\.status\\[eth0\\]\\)=2$",
+    "example": "last(/sw1/if.status[eth0])=2"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: средняя загрузка CPU (item system.cpu.load) за последние 10 минут больше 4.",
+    "hint": "avg() с периодом 10m.",
+    "regex": "^avg\\(/srv1/system\\.cpu\\.load,10m\\)>4$",
+    "example": "avg(/srv1/system.cpu.load,10m)>4"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: средняя доступная память (item vm.memory.size[pavailable]) за последние 30 минут меньше 15%.",
+    "hint": "avg() с периодом 30m.",
+    "regex": "^avg\\(/srv2/vm\\.memory\\.size\\[pavailable\\],30m\\)<15$",
+    "example": "avg(/srv2/vm.memory.size[pavailable],30m)<15"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: среднее число подключений MySQL (item mysql.status[Threads_connected]) за последние 15 минут больше 100.",
+    "hint": "avg() с периодом 15m.",
+    "regex": "^avg\\(/db1/mysql\\.status\\[Threads_connected\\],15m\\)>100$",
+    "example": "avg(/db1/mysql.status[Threads_connected],15m)>100"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: среднее время отклика HTTP (item net.tcp.service.perf[http]) за последние 5 минут больше 2 секунд.",
+    "hint": "avg() с периодом 5m.",
+    "regex": "^avg\\(/web1/net\\.tcp\\.service\\.perf\\[http\\],5m\\)>2$",
+    "example": "avg(/web1/net.tcp.service.perf[http],5m)>2"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: минимальная загрузка CPU (item system.cpu.load) за последние 3 значения больше 5 (нагрузка стабильно высокая).",
+    "hint": "min() со счётным периодом #3.",
+    "regex": "^min\\(/srv1/system\\.cpu\\.load,#3\\)>5$",
+    "example": "min(/srv1/system.cpu.load,#3)>5"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: максимальное свободное место (item vfs.fs.size[/,pfree]) за последний час меньше 10% (места стабильно мало).",
+    "hint": "max() с периодом 1h.",
+    "regex": "^max\\(/srv2/vfs\\.fs\\.size\\[/,pfree\\],1h\\)<10$",
+    "example": "max(/srv2/vfs.fs.size[/,pfree],1h)<10"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: максимальное число активных запросов (item mysql.status[Threads_running]) за последние 10 минут больше 50.",
+    "hint": "max() с периодом 10m.",
+    "regex": "^max\\(/db1/mysql\\.status\\[Threads_running\\],10m\\)>50$",
+    "example": "max(/db1/mysql.status[Threads_running],10m)>50"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: минимальное значение net.tcp.service[http] за последние 5 минут равно 0 (сервис всё это время недоступен).",
+    "hint": "min() с периодом 5m.",
+    "regex": "^min\\(/web1/net\\.tcp\\.service\\[http\\],5m\\)=0$",
+    "example": "min(/web1/net.tcp.service[http],5m)=0"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: средняя загрузка CPU (item system.cpu.util) за последний час больше 85%.",
+    "hint": "avg() с периодом 1h.",
+    "regex": "^avg\\(/ws1/system\\.cpu\\.util,1h\\)>85$",
+    "example": "avg(/ws1/system.cpu.util,1h)>85"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: средняя входящая нагрузка на интерфейс (item net.if.in[eth0]) за последние 5 минут больше 100000000 бит/с.",
+    "hint": "avg() с периодом 5m.",
+    "regex": "^avg\\(/sw1/net\\.if\\.in\\[eth0\\],5m\\)>100000000$",
+    "example": "avg(/sw1/net.if.in[eth0],5m)>100000000"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: суммарное число ошибок отправки почты (гипотетический item mail.errors) за последний час больше 50.",
+    "hint": "sum() с периодом 1h.",
+    "regex": "^sum\\(/mail1/mail\\.errors,1h\\)>50$",
+    "example": "sum(/mail1/mail.errors,1h)>50"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: средний свободный swap (item system.swap.size[,pfree]) за последние 30 минут меньше 30%.",
+    "hint": "avg() с периодом 30m.",
+    "regex": "^avg\\(/srv1/system\\.swap\\.size\\[,pfree\\],30m\\)<30$",
+    "example": "avg(/srv1/system.swap.size[,pfree],30m)<30"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: средняя задержка репликации (гипотетический item mysql.replication_lag) за последние 5 минут больше 30 секунд.",
+    "hint": "avg() с периодом 5m.",
+    "regex": "^avg\\(/db1/mysql\\.replication_lag,5m\\)>30$",
+    "example": "avg(/db1/mysql.replication_lag,5m)>30"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: максимальное время отклика HTTPS (item net.tcp.service.perf[https]) за последние 15 минут больше 3 секунд.",
+    "hint": "max() с периодом 15m.",
+    "regex": "^max\\(/web1/net\\.tcp\\.service\\.perf\\[https\\],15m\\)>3$",
+    "example": "max(/web1/net.tcp.service.perf[https],15m)>3"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: минимальная доступная память (item vm.memory.size[pavailable]) за последний час меньше 5%.",
+    "hint": "min() с периодом 1h.",
+    "regex": "^min\\(/srv2/vm\\.memory\\.size\\[pavailable\\],1h\\)<5$",
+    "example": "min(/srv2/vm.memory.size[pavailable],1h)<5"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: из последних 5 проверок (item net.tcp.service[http]) минимум 3 вернули 0.",
+    "hint": "count() со счётным периодом #5, оператором \"eq\" и паттерном \"0\".",
+    "regex": "^count\\(/web1/net\\.tcp\\.service\\[http\\],#5,\"eq\",\"0\"\\)>=3$",
+    "example": "count(/web1/net.tcp.service[http],#5,\"eq\",\"0\")>=3"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: за последние 30 минут значение system.cpu.load превышало 10 не менее 5 раз.",
+    "hint": "count() с периодом 30m, оператором \"gt\".",
+    "regex": "^count\\(/srv1/system\\.cpu\\.load,30m,\"gt\",\"10\"\\)>=5$",
+    "example": "count(/srv1/system.cpu.load,30m,\"gt\",\"10\")>=5"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: за последние 10 минут mysql.status[Threads_running] превышал 100 не менее 3 раз.",
+    "hint": "count() с периодом 10m, оператором \"gt\".",
+    "regex": "^count\\(/db1/mysql\\.status\\[Threads_running\\],10m,\"gt\",\"100\"\\)>=3$",
+    "example": "count(/db1/mysql.status[Threads_running],10m,\"gt\",\"100\")>=3"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: за последние 5 минут все проверки net.tcp.service[smtp] (не менее 5 раз) вернули 0.",
+    "hint": "count() с периодом 5m, оператором \"eq\".",
+    "regex": "^count\\(/mail1/net\\.tcp\\.service\\[smtp\\],5m,\"eq\",\"0\"\\)>=5$",
+    "example": "count(/mail1/net.tcp.service[smtp],5m,\"eq\",\"0\")>=5"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: за последний час свободное место (item vfs.fs.size[/,pfree]) было ниже 10% не менее 3 раз.",
+    "hint": "count() с периодом 1h, оператором \"lt\".",
+    "regex": "^count\\(/srv2/vfs\\.fs\\.size\\[/,pfree\\],1h,\"lt\",\"10\"\\)>=3$",
+    "example": "count(/srv2/vfs.fs.size[/,pfree],1h,\"lt\",\"10\")>=3"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: за последние 15 минут system.cpu.util превышал 95 не менее 4 раз.",
+    "hint": "count() с периодом 15m, оператором \"gt\".",
+    "regex": "^count\\(/ws1/system\\.cpu\\.util,15m,\"gt\",\"95\"\\)>=4$",
+    "example": "count(/ws1/system.cpu.util,15m,\"gt\",\"95\")>=4"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: за последние 10 минут web.test.rspcode[scenario1,step1] был равен 500 не менее 2 раз.",
+    "hint": "count() с периодом 10m, оператором \"eq\".",
+    "regex": "^count\\(/web1/web\\.test\\.rspcode\\[scenario1,step1\\],10m,\"eq\",\"500\"\\)>=2$",
+    "example": "count(/web1/web.test.rspcode[scenario1,step1],10m,\"eq\",\"500\")>=2"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: за последний час число ошибок интерфейса (item net.if.in[eth0,errors]) было больше 0 не менее 10 раз.",
+    "hint": "count() с периодом 1h, оператором \"gt\".",
+    "regex": "^count\\(/sw1/net\\.if\\.in\\[eth0,errors\\],1h,\"gt\",\"0\"\\)>=10$",
+    "example": "count(/sw1/net.if.in[eth0,errors],1h,\"gt\",\"0\")>=10"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: из последних 5 проверок (item icmpping) минимум 3 вернули 0.",
+    "hint": "count() со счётным периодом #5, оператором \"eq\".",
+    "regex": "^count\\(/srv1/icmpping,#5,\"eq\",\"0\"\\)>=3$",
+    "example": "count(/srv1/icmpping,#5,\"eq\",\"0\")>=3"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: за последние 20 минут mysql.status[Threads_connected] превышал 200 ровно 1 раз.",
+    "hint": "count() с периодом 20m, оператором \"gt\".",
+    "regex": "^count\\(/db1/mysql\\.status\\[Threads_connected\\],20m,\"gt\",\"200\"\\)=1$",
+    "example": "count(/db1/mysql.status[Threads_connected],20m,\"gt\",\"200\")=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: нет данных по item vfs.fs.size[/,pfree] за последние 15 минут.",
+    "hint": "nodata() с периодом 15m.",
+    "regex": "^nodata\\(/srv1/vfs\\.fs\\.size\\[/,pfree\\],15m\\)=1$",
+    "example": "nodata(/srv1/vfs.fs.size[/,pfree],15m)=1"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: нет данных по item mysql.status[Threads_connected] за последние 5 минут.",
+    "hint": "nodata() с периодом 5m.",
+    "regex": "^nodata\\(/db1/mysql\\.status\\[Threads_connected\\],5m\\)=1$",
+    "example": "nodata(/db1/mysql.status[Threads_connected],5m)=1"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: нет данных по item net.tcp.service.perf[http] за последние 10 минут.",
+    "hint": "nodata() с периодом 10m.",
+    "regex": "^nodata\\(/web1/net\\.tcp\\.service\\.perf\\[http\\],10m\\)=1$",
+    "example": "nodata(/web1/net.tcp.service.perf[http],10m)=1"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: нет данных по item system.cpu.util за последние 20 минут.",
+    "hint": "nodata() с периодом 20m.",
+    "regex": "^nodata\\(/ws1/system\\.cpu\\.util,20m\\)=1$",
+    "example": "nodata(/ws1/system.cpu.util,20m)=1"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: нет данных по item net.if.in[eth0] за последние 30 минут.",
+    "hint": "nodata() с периодом 30m.",
+    "regex": "^nodata\\(/sw1/net\\.if\\.in\\[eth0\\],30m\\)=1$",
+    "example": "nodata(/sw1/net.if.in[eth0],30m)=1"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: нет данных по item net.tcp.service[smtp] за последние 5 минут.",
+    "hint": "nodata() с периодом 5m.",
+    "regex": "^nodata\\(/mail1/net\\.tcp\\.service\\[smtp\\],5m\\)=1$",
+    "example": "nodata(/mail1/net.tcp.service[smtp],5m)=1"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: нет данных по item system.cpu.load за последний час.",
+    "hint": "nodata() с периодом 1h.",
+    "regex": "^nodata\\(/srv2/system\\.cpu\\.load,1h\\)=1$",
+    "example": "nodata(/srv2/system.cpu.load,1h)=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: нет данных по item log_item (лог не пишется) за последние 30 минут.",
+    "hint": "nodata() с периодом 30m.",
+    "regex": "^nodata\\(/srv1/log_item,30m\\)=1$",
+    "example": "nodata(/srv1/log_item,30m)=1"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: нет данных по item vfs.fs.size[/var/lib/mysql,pfree] за последние 10 минут в строгом режиме.",
+    "hint": "nodata() с периодом 10m и третьим параметром \"strict\".",
+    "regex": "^nodata\\(/db1/vfs\\.fs\\.size\\[/var/lib/mysql,pfree\\],10m,\"strict\"\\)=1$",
+    "example": "nodata(/db1/vfs.fs.size[/var/lib/mysql,pfree],10m,\"strict\")=1"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: нет данных по item proc.num[nginx] за последние 5 минут.",
+    "hint": "nodata() с периодом 5m.",
+    "regex": "^nodata\\(/web1/proc\\.num\\[nginx\\],5m\\)=1$",
+    "example": "nodata(/web1/proc.num[nginx],5m)=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: значение system.uptime уменьшилось относительно предыдущего (произошёл перезапуск).",
+    "hint": "change() = текущее минус предыдущее значение; при перезапуске оно отрицательное.",
+    "regex": "^change\\(/srv1/system\\.uptime\\)<0$",
+    "example": "change(/srv1/system.uptime)<0"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: значение mysql.status[Threads_connected] изменилось относительно предыдущего.",
+    "hint": "diff() возвращает 1, если последнее значение отличается от предыдущего.",
+    "regex": "^diff\\(/db1/mysql\\.status\\[Threads_connected\\]\\)=1$",
+    "example": "diff(/db1/mysql.status[Threads_connected])=1"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: количество процессов nginx (item proc.num[nginx]) изменилось относительно предыдущего значения.",
+    "hint": "diff() без периода.",
+    "regex": "^diff\\(/web1/proc\\.num\\[nginx\\]\\)=1$",
+    "example": "diff(/web1/proc.num[nginx])=1"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: входящий трафик (item net.if.in[eth0]) увеличился более чем на 500000000 относительно предыдущего значения.",
+    "hint": "change() без периода.",
+    "regex": "^change\\(/srv2/net\\.if\\.in\\[eth0\\]\\)>500000000$",
+    "example": "change(/srv2/net.if.in[eth0])>500000000"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: доступность SMTP (item net.tcp.service[smtp]) изменилась относительно предыдущей проверки.",
+    "hint": "diff() без периода.",
+    "regex": "^diff\\(/mail1/net\\.tcp\\.service\\[smtp\\]\\)=1$",
+    "example": "diff(/mail1/net.tcp.service[smtp])=1"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: 95-й перцентиль времени отклика HTTP (item net.tcp.service.perf[http]) за последний час больше 2 секунд.",
+    "hint": "percentile() с периодом 1h и процентилем 95.",
+    "regex": "^percentile\\(/web1/net\\.tcp\\.service\\.perf\\[http\\],1h,95\\)>2$",
+    "example": "percentile(/web1/net.tcp.service.perf[http],1h,95)>2"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: 90-й перцентиль загрузки CPU (item system.cpu.load) за последние 30 минут больше 6.",
+    "hint": "percentile() с периодом 30m и процентилем 90.",
+    "regex": "^percentile\\(/srv1/system\\.cpu\\.load,30m,90\\)>6$",
+    "example": "percentile(/srv1/system.cpu.load,30m,90)>6"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: 99-й перцентиль числа подключений (item mysql.status[Threads_connected]) за последний час больше 300.",
+    "hint": "percentile() с периодом 1h и процентилем 99.",
+    "regex": "^percentile\\(/db1/mysql\\.status\\[Threads_connected\\],1h,99\\)>300$",
+    "example": "percentile(/db1/mysql.status[Threads_connected],1h,99)>300"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: 50-й перцентиль (медиана) доступной памяти (item vm.memory.size[pavailable]) за последние 2 часа меньше 15%.",
+    "hint": "percentile() с периодом 2h и процентилем 50.",
+    "regex": "^percentile\\(/srv2/vm\\.memory\\.size\\[pavailable\\],2h,50\\)<15$",
+    "example": "percentile(/srv2/vm.memory.size[pavailable],2h,50)<15"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: 95-й перцентиль входящего трафика (item net.if.in[eth0]) за последние 15 минут больше 900000000.",
+    "hint": "percentile() с периодом 15m и процентилем 95.",
+    "regex": "^percentile\\(/sw1/net\\.if\\.in\\[eth0\\],15m,95\\)>900000000$",
+    "example": "percentile(/sw1/net.if.in[eth0],15m,95)>900000000"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: среднее значение по трендам (item system.cpu.load) за последний день больше 5.",
+    "hint": "trendavg() с периодом 1d.",
+    "regex": "^trendavg\\(/srv1/system\\.cpu\\.load,1d\\)>5$",
+    "example": "trendavg(/srv1/system.cpu.load,1d)>5"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: максимальное значение по трендам (item mysql.status[Threads_connected]) за последнюю неделю больше 500.",
+    "hint": "trendmax() с периодом 1w.",
+    "regex": "^trendmax\\(/db1/mysql\\.status\\[Threads_connected\\],1w\\)>500$",
+    "example": "trendmax(/db1/mysql.status[Threads_connected],1w)>500"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: минимальное значение по трендам (item net.tcp.service[http]) за последний месяц равно 0 (были простои).",
+    "hint": "trendmin() с периодом 1M.",
+    "regex": "^trendmin\\(/web1/net\\.tcp\\.service\\[http\\],1M\\)=0$",
+    "example": "trendmin(/web1/net.tcp.service[http],1M)=0"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: суммарное значение по трендам (item net.if.in[eth0]) за последний день больше 5000000000.",
+    "hint": "trendsum() с периодом 1d.",
+    "regex": "^trendsum\\(/srv2/net\\.if\\.in\\[eth0\\],1d\\)>5000000000$",
+    "example": "trendsum(/srv2/net.if.in[eth0],1d)>5000000000"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: количество сохранённых часовых значений трендов (item net.if.in[eth0]) за последний день меньше 20 (пропуски в данных).",
+    "hint": "trendcount() с периодом 1d.",
+    "regex": "^trendcount\\(/sw1/net\\.if\\.in\\[eth0\\],1d\\)<20$",
+    "example": "trendcount(/sw1/net.if.in[eth0],1d)<20"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: по данным за последний час прогноз (forecast) свободного места (item vfs.fs.size[/,pfree]) через 1 день будет меньше 5%.",
+    "hint": "forecast(item,период_данных,время_прогноза).",
+    "regex": "^forecast\\(/srv1/vfs\\.fs\\.size\\[/,pfree\\],1h,1d\\)<5$",
+    "example": "forecast(/srv1/vfs.fs.size[/,pfree],1h,1d)<5"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: по данным за последние 30 минут прогноз числа подключений (item mysql.status[Threads_connected]) через 2 часа превысит 500.",
+    "hint": "forecast(item,период_данных,время_прогноза).",
+    "regex": "^forecast\\(/db1/mysql\\.status\\[Threads_connected\\],30m,2h\\)>500$",
+    "example": "forecast(/db1/mysql.status[Threads_connected],30m,2h)>500"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: по данным за последний час расчётное время (timeleft) до падения свободного места (item vfs.fs.size[/,pfree]) ниже порога 5% меньше 1 дня.",
+    "hint": "timeleft(item,период_данных,порог).",
+    "regex": "^timeleft\\(/srv1/vfs\\.fs\\.size\\[/,pfree\\],1h,5\\)<1d$",
+    "example": "timeleft(/srv1/vfs.fs.size[/,pfree],1h,5)<1d"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: по данным за последние 30 минут расчётное время (timeleft) до падения доступной памяти (item vm.memory.size[pavailable]) ниже порога 10% меньше 2 часов.",
+    "hint": "timeleft(item,период_данных,порог).",
+    "regex": "^timeleft\\(/srv2/vm\\.memory\\.size\\[pavailable\\],30m,10\\)<2h$",
+    "example": "timeleft(/srv2/vm.memory.size[pavailable],30m,10)<2h"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: по данным за последний час расчётное время (timeleft) до превышения очередью писем (item mail.queue.size) порога 1000 меньше 6 часов.",
+    "hint": "timeleft(item,период_данных,порог).",
+    "regex": "^timeleft\\(/mail1/mail\\.queue\\.size,1h,1000\\)<6h$",
+    "example": "timeleft(/mail1/mail.queue.size,1h,1000)<6h"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: последнее значение лога (item log_item) содержит подстроку \"CRITICAL\".",
+    "hint": "find(item,,\"like\",\"паттерн\") без указания периода означает проверку последнего значения (два подряд идущих запятых).",
+    "regex": "^find\\(/srv1/log_item,,\"like\",\"CRITICAL\"\\)=1$",
+    "example": "find(/srv1/log_item,,\"like\",\"CRITICAL\")=1"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: в последних 10 записях лога (item log_item) есть совпадение с регулярным выражением \"50[0-9]\".",
+    "hint": "find() со счётным периодом #10 и оператором \"regexp\".",
+    "regex": "^find\\(/web1/log_item,#10,\"regexp\",\"50\\[0-9\\]\"\\)=1$",
+    "example": "find(/web1/log_item,#10,\"regexp\",\"50[0-9]\")=1"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: в последних 20 записях лога (item log_item) встречается слово \"reject\" без учёта регистра.",
+    "hint": "find() со счётным периодом #20 и оператором \"iregexp\".",
+    "regex": "^find\\(/mail1/log_item,#20,\"iregexp\",\"reject\"\\)=1$",
+    "example": "find(/mail1/log_item,#20,\"iregexp\",\"reject\")=1"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: в последних 5 записях лога (item log_item) НЕТ совпадений со словом \"OK\".",
+    "hint": "find() со счётным периодом #5 и оператором \"like\"; результат сравнивается с 0.",
+    "regex": "^find\\(/srv2/log_item,#5,\"like\",\"OK\"\\)=0$",
+    "example": "find(/srv2/log_item,#5,\"like\",\"OK\")=0"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: последнее событие лога (item log_item) имеет ID события, совпадающий с шаблоном \"^1000$\".",
+    "hint": "logeventid(item,паттерн), без периода.",
+    "regex": "^logeventid\\(/db1/log_item,\"\\^1000\\$\"\\)=1$",
+    "example": "logeventid(/db1/log_item,\"^1000$\")=1"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: последнее событие Windows-журнала (item eventlog[Application]) соответствует шаблону ID \"^(4625|529)$\" (неудачный вход).",
+    "hint": "logeventid(item,паттерн).",
+    "regex": "^logeventid\\(/ws1/eventlog\\[Application\\],\"\\^\\(4625\\|529\\)\\$\"\\)=1$",
+    "example": "logeventid(/ws1/eventlog[Application],\"^(4625|529)$\")=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: системное время хоста (item system.localtime) рассинхронизировано с сервером Zabbix более чем на 60 секунд.",
+    "hint": "fuzzytime(item,sec) возвращает 0, если рассинхронизация превышает лимит.",
+    "regex": "^fuzzytime\\(/srv1/system\\.localtime,60\\)=0$",
+    "example": "fuzzytime(/srv1/system.localtime,60)=0"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: в последних 3 записях лога (item log_item) встречается слово \"PANIC\".",
+    "hint": "find() со счётным периодом #3 и оператором \"like\".",
+    "regex": "^find\\(/srv2/log_item,#3,\"like\",\"PANIC\"\\)=1$",
+    "example": "find(/srv2/log_item,#3,\"like\",\"PANIC\")=1"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: за последние 15 минут в логе (item log_item) есть совпадение с регулярным выражением \"(virus|malware)\" без учёта регистра.",
+    "hint": "find() с периодом 15m и оператором \"iregexp\".",
+    "regex": "^find\\(/mail1/log_item,15m,\"iregexp\",\"\\(virus\\|malware\\)\"\\)=1$",
+    "example": "find(/mail1/log_item,15m,\"iregexp\",\"(virus|malware)\")=1"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: в последних 5 записях лога (item log_item) НЕТ совпадений с регулярным выражением \"ERROR|FATAL\".",
+    "hint": "find() со счётным периодом #5 и оператором \"regexp\"; результат сравнивается с 0.",
+    "regex": "^find\\(/db1/log_item,#5,\"regexp\",\"ERROR\\|FATAL\"\\)=0$",
+    "example": "find(/db1/log_item,#5,\"regexp\",\"ERROR|FATAL\")=0"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: сегодня выходной (суббота или воскресенье) и средняя загрузка CPU (item system.cpu.load) за последние 5 минут больше 8.",
+    "hint": "Используйте функцию dayofweek(); часть с or оберните в скобки, условия объедините через and (все ключевые слова строчными буквами, без лишних пробелов внутри скобок).",
+    "regex": "^avg\\(/srv1/system\\.cpu\\.load,5m\\)>8and\\(dayofweek\\(\\)=6ordayofweek\\(\\)=7\\)$",
+    "example": "avg(/srv1/system.cpu.load,5m)>8 and (dayofweek()=6 or dayofweek()=7)"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: одновременно недоступны и сервис (item net.tcp.service[http]), и агент (item agent.ping) — проблема на уровне всего хоста.",
+    "hint": "Соедините два условия last()=0 через and.",
+    "regex": "^last\\(/web1/net\\.tcp\\.service\\[http\\]\\)=0andlast\\(/web1/agent\\.ping\\)=0$",
+    "example": "last(/web1/net.tcp.service[http])=0 and last(/web1/agent.ping)=0"
+  },
+  {
+    "desc": "Хосты srv1 и srv2. Написать триггер: средняя загрузка CPU (item system.cpu.load) за последние 5 минут больше 5 одновременно на обоих хостах.",
+    "hint": "Два условия avg(), объединённые через and, каждое со своим хостом.",
+    "regex": "^avg\\(/srv1/system\\.cpu\\.load,5m\\)>5andavg\\(/srv2/system\\.cpu\\.load,5m\\)>5$",
+    "example": "avg(/srv1/system.cpu.load,5m)>5 and avg(/srv2/system.cpu.load,5m)>5"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: заканчивается место (item vfs.fs.size[/,pfree] меньше 15%) ИЛИ слишком много подключений (item mysql.status[Threads_connected] больше 300).",
+    "hint": "Соедините два условия через or.",
+    "regex": "^last\\(/db1/vfs\\.fs\\.size\\[/,pfree\\]\\)<15orlast\\(/db1/mysql\\.status\\[Threads_connected\\]\\)>300$",
+    "example": "last(/db1/vfs.fs.size[/,pfree])<15 or last(/db1/mysql.status[Threads_connected])>300"
+  },
+  {
+    "desc": "Хост ws1. Написать триггер: сейчас окно с 02:00 до 04:00 (функция time()) и при этом загрузка CPU (item system.cpu.util) за последние 5 минут выше 90%.",
+    "hint": "time() возвращает текущее время в формате ЧЧММСС; сравните его с 020000 и 040000, все условия объедините через and.",
+    "regex": "^avg\\(/ws1/system\\.cpu\\.util,5m\\)>90andtime\\(\\)>020000andtime\\(\\)<040000$",
+    "example": "avg(/ws1/system.cpu.util,5m)>90 and time()>020000 and time()<040000"
+  },
+  {
+    "desc": "Хост db1. Написать триггер (гипотетический item mysql.status_flags — битовая маска): у последнего значения установлен бит 4.",
+    "hint": "count() со счётным периодом #1, оператором \"band\" и паттерном \"4\" (проверка последнего значения через побитовое И).",
+    "regex": "^count\\(/db1/mysql\\.status_flags,#1,\"band\",\"4\"\\)=1$",
+    "example": "count(/db1/mysql.status_flags,#1,\"band\",\"4\")=1"
+  },
+  {
+    "desc": "Хост srv1. Написать триггер: важность последней записи лога (item log_item) не ниже Warning (числовой код 2).",
+    "hint": "logseverity(item) возвращает числовой код важности последней записи лога, без периода.",
+    "regex": "^logseverity\\(/srv1/log_item\\)>=2$",
+    "example": "logseverity(/srv1/log_item)>=2"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: заряд батареи ИБП (гипотетический item ups.battery.charge) меньше 30%.",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/mail1/ups\\.battery\\.charge\\)<30$",
+    "example": "last(/mail1/ups.battery.charge)<30"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: среднее число операций чтения с диска sda (item vfs.dev.read[sda,ops]) за последние 5 минут больше 1000.",
+    "hint": "avg() с периодом 5m.",
+    "regex": "^avg\\(/srv2/vfs\\.dev\\.read\\[sda,ops\\],5m\\)>1000$",
+    "example": "avg(/srv2/vfs.dev.read[sda,ops],5m)>1000"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: среднее время выполнения веб-сценария целиком (item web.test.time[scenario1,,total]) за последние 10 минут больше 5 секунд.",
+    "hint": "avg() с периодом 10m.",
+    "regex": "^avg\\(/web1/web\\.test\\.time\\[scenario1,,total\\],10m\\)>5$",
+    "example": "avg(/web1/web.test.time[scenario1,,total],10m)>5"
+  },
+  {
+    "desc": "Хост web1. Написать триггер: последний код ответа веб-проверки (item web.test.rspcode[scenario1,step1]) не равен 200.",
+    "hint": "last() без периода; оператор неравенства в Zabbix записывается как <>.",
+    "regex": "^last\\(/web1/web\\.test\\.rspcode\\[scenario1,step1\\]\\)<>200$",
+    "example": "last(/web1/web.test.rspcode[scenario1,step1])<>200"
+  },
+  {
+    "desc": "Хост srv2. Написать триггер: среднее время ожидания в очереди (гипотетический item mq.queue.wait) за последние 10 минут больше 30 секунд.",
+    "hint": "avg() с периодом 10m.",
+    "regex": "^avg\\(/srv2/mq\\.queue\\.wait,10m\\)>30$",
+    "example": "avg(/srv2/mq.queue.wait,10m)>30"
+  },
+  {
+    "desc": "Хост db1. Написать триггер: репликация MySQL остановлена (item mysql.status[Slave_SQL_Running] равен 0).",
+    "hint": "last() без периода.",
+    "regex": "^last\\(/db1/mysql\\.status\\[Slave_SQL_Running\\]\\)=0$",
+    "example": "last(/db1/mysql.status[Slave_SQL_Running])=0"
+  },
+  {
+    "desc": "Хост sw1. Написать триггер: средняя температура коммутатора (item sensor.temp.value) за последние 10 минут больше 70.",
+    "hint": "avg() с периодом 10m.",
+    "regex": "^avg\\(/sw1/sensor\\.temp\\.value,10m\\)>70$",
+    "example": "avg(/sw1/sensor.temp.value,10m)>70"
+  },
+  {
+    "desc": "Хост mail1. Написать триггер: минимальное свободное место в очереди почты (item vfs.fs.size[/var/spool,pfree]) за последние 30 минут меньше 15%.",
+    "hint": "min() с периодом 30m.",
+    "regex": "^min\\(/mail1/vfs\\.fs\\.size\\[/var/spool,pfree\\],30m\\)<15$",
+    "example": "min(/mail1/vfs.fs.size[/var/spool,pfree],30m)<15"
+  }
+]

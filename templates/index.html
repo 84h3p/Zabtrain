@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zabtrain - тренажер триггеров Zabbix</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --cyan: #06b6d4;
+            --border: #334155;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Roboto',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;line-height:1.6}
+        .container{max-width:800px;margin:0 auto;padding:20px}
+        .header{text-align:center;padding:40px 20px 30px}
+        .header h1{font-size:2.2rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+        .header p{color:var(--text-secondary);font-size:1rem}
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;box-shadow:var(--shadow)}
+        .menu-screen{display:flex;flex-direction:column;gap:16px}
+        .menu-btn{display:flex;align-items:center;gap:16px;padding:20px 24px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:1.05rem;font-weight:500;cursor:pointer;transition:all 0.2s ease;text-align:left}
+        .menu-btn:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accent-glow);transform:translateY(-2px)}
+        .menu-btn:active{transform:translateY(0)}
+        .menu-btn .icon{font-size:1.8rem;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(59,130,246,0.1);border-radius:var(--radius-sm);flex-shrink:0}
+        .menu-btn .label{display:flex;flex-direction:column}
+        .menu-btn .label small{color:var(--text-muted);font-size:0.85rem;font-weight:400}
+        .stats-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;flex-wrap:wrap;gap:10px}
+        .stats-bar .stat{display:flex;align-items:center;gap:6px;font-size:0.95rem}
+        .stat-value{font-weight:700;font-size:1.1rem}
+        .stat-correct .stat-value{color:var(--success)}
+        .stat-skipped .stat-value{color:var(--warning)}
+        .stat-progress .stat-value{color:var(--accent)}
+        .task-desc{font-size:1.15rem;font-weight:500;line-height:1.7;margin-bottom:24px;padding:20px;background:var(--bg-input);border-radius:var(--radius-sm);border-left:4px solid var(--accent)}
+        .answer-area{display:flex;gap:12px;margin-bottom:16px}
+        .answer-input{flex:1;padding:14px 18px;background:var(--bg-input);border:2px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:1rem;font-family:'Fira Code','Cascadia Code','Consolas',monospace;transition:border-color 0.2s}
+        .answer-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+        .answer-input::placeholder{color:var(--text-muted);font-family:'Segoe UI',sans-serif}
+        .btn{padding:14px 24px;border:none;border-radius:var(--radius-sm);font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.2s ease;white-space:nowrap}
+        .btn:active{transform:scale(0.97)}
+        .btn-primary{background:var(--accent);color:#fff}
+        .btn-primary:hover{background:var(--accent-hover);box-shadow:0 0 20px var(--accent-glow)}
+        .btn-secondary{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+        .btn-secondary:hover{border-color:var(--text-secondary);color:var(--text-primary)}
+        .actions{display:flex;gap:10px;flex-wrap:wrap}
+        .feedback{padding:16px 20px;border-radius:var(--radius-sm);margin-top:16px;font-weight:500;display:none;animation:fadeIn 0.3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        .feedback.show{display:block}
+        .feedback-success{background:var(--success-bg);border:1px solid rgba(34,197,94,0.3);color:var(--success)}
+        .feedback-error{background:var(--error-bg);border:1px solid rgba(239,68,68,0.3);color:var(--error)}
+        .feedback-hint{background:var(--warning-bg);border:1px solid rgba(245,158,11,0.3);color:var(--warning)}
+        .feedback-answer{background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);color:var(--cyan)}
+        .feedback-answer code{display:block;margin-top:8px;padding:10px 14px;background:var(--bg-input);border-radius:6px;font-family:'Fira Code',monospace;font-size:0.95rem;word-break:break-all}
+        .tasks-list{max-height:60vh;overflow-y:auto}
+        .tasks-list::-webkit-scrollbar{width:6px}
+        .tasks-list::-webkit-scrollbar-track{background:var(--bg-primary)}
+        .tasks-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+        .task-list-item{padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.92rem;line-height:1.5;color:var(--text-secondary);transition:background 0.15s}
+        .task-list-item:hover{background:var(--bg-input);color:var(--text-primary)}
+        .task-list-item:last-child{border-bottom:none}
+        .task-list-item .num{color:var(--accent);font-weight:600;margin-right:8px;font-family:monospace}
+        .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-muted);font-size:0.9rem;cursor:pointer;padding:8px 0;margin-bottom:16px;transition:color 0.2s;background:none;border:none}
+        .back-btn:hover{color:var(--text-primary)}
+        .loading{text-align:center;padding:60px 20px;color:var(--text-muted)}
+        .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .results{text-align:center;padding:20px 0}
+        .results h2{font-size:1.8rem;margin-bottom:24px}
+        .results-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+        .result-stat{padding:20px;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border)}
+        .result-stat .value{font-size:2rem;font-weight:700}
+        .result-stat .label{color:var(--text-muted);font-size:0.9rem;margin-top:4px}
+        .hidden{display:none !important}
+        @media(max-width:600px){.header h1{font-size:1.6rem}.card{padding:20px}.answer-area{flex-direction:column}.results-stats{grid-template-columns:1fr}.stats-bar{flex-direction:column;align-items:flex-start}.actions{flex-direction:column}.actions .btn{width:100%}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>&#x1F680; Zabtrain</h1>
+            <p>Тренажер для практики написания триггерных выражений Zabbix</p>
+        </div>
+        <div id="menu-screen">
+            <div class="card">
+                <div class="menu-screen">
+                    <button class="menu-btn" onclick="startTraining('random')">
+                        <div class="icon">&#x1F3B2;</div>
+                        <div class="label">Случайный порядок<small>Все {{ total }} задач в случайном порядке</small></div>
+                    </button>
+                    <button class="menu-btn" onclick="startTraining('ordered')">
+                        <div class="icon">&#x1F4CB;</div>
+                        <div class="label">По порядку<small>Все {{ total }} задач последовательно</small></div>
+                    </button>
+                    <button class="menu-btn" onclick="showTaskPicker()">
+                        <div class="icon">&#x1F4C4;</div>
+                        <div class="label">Конкретная задача<small>Выбрать одну задачу из списка</small></div>
+                    </button>
+                    <button class="menu-btn" onclick="showAllTasks()">
+                        <div class="icon">&#x1F4CB;</div>
+                        <div class="label">Список всех задач<small>Просмотреть описание всех {{ total }} задач</small></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="task-picker" class="hidden">
+            <button class="back-btn" onclick="showMenu()">&#x2190; Назад в меню</button>
+            <div class="card">
+                <h3 style="margin-bottom:16px">Выберите задачу</h3>
+                <div id="task-picker-list" class="tasks-list"><div class="loading"><div class="spinner"></div>Загрузка...</div></div>
+            </div>
+        </div>
+        <div id="tasks-list-view" class="hidden">
+            <button class="back-btn" onclick="showMenu()">&#x2190; Назад в меню</button>
+            <div class="card">
+                <h3 style="margin-bottom:16px">Все задачи ({{ total }})</h3>
+                <div id="all-tasks-list" class="tasks-list"><div class="loading"><div class="spinner"></div>Загрузка...</div></div>
+            </div>
+        </div>
+        <div id="training-screen" class="hidden">
+            <div class="stats-bar">
+                <div class="stat stat-progress"><span>&#x1F4C8;</span><span class="stat-value" id="stat-progress">1 / {{ total }}</span></div>
+                <div class="stat stat-correct"><span>&#x2705;</span><span class="stat-value" id="stat-correct">0</span></div>
+                <div class="stat stat-skipped"><span>&#x23F8;</span><span class="stat-value" id="stat-skipped">0</span></div>
+                <button class="back-btn" onclick="quitTraining()" style="margin:0;padding:4px 8px">&#x274C; Выход</button>
+            </div>
+            <div class="card" id="task-card"><div class="loading"><div class="spinner"></div>Загрузка задачи...</div></div>
+        </div>
+        <div id="results-screen" class="hidden">
+            <div class="card results">
+                <h2>&#x1F3C6; Тренировка завершена!</h2>
+                <div class="results-stats">
+                    <div class="result-stat"><div class="value" style="color:var(--success)" id="result-correct">0</div><div class="label">Верно</div></div>
+                    <div class="result-stat"><div class="value" style="color:var(--warning)" id="result-skipped">0</div><div class="label">Показано</div></div>
+                    <div class="result-stat"><div class="value" style="color:var(--accent)" id="result-total">0</div><div class="label">Всего</div></div>
+                </div>
+                <div class="actions" style="justify-content:center">
+                    <button class="btn btn-primary" onclick="showMenu()">&#x1F3C6; В меню</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showScreen(id){['menu-screen','task-picker','tasks-list-view','training-screen','results-screen'].forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id))}
+        function showMenu(){showScreen('menu-screen')}
+        async function api(path,method='GET',body=null){const opts={method,headers:{'Content-Type':'application/json'}};if(body)opts.body=JSON.stringify(body);const res=await fetch(path,opts);return res.json()}
+        async function startTraining(mode){await api('/api/start','POST',{mode});showScreen('training-screen');loadTask()}
+        async function showTaskPicker(){showScreen('task-picker');const list=document.getElementById('task-picker-list');const data=await api('/api/tasks-list');list.innerHTML=data.tasks.map(t=>'<div class="task-list-item" style="cursor:pointer" onclick="startSingleTask('+t.num+')"><span class="num">['+t.num+']</span>'+t.desc+'</div>').join('')}
+        async function startSingleTask(taskNum){await api('/api/start','POST',{mode:'single',task_num:taskNum-1});showScreen('training-screen');loadTask()}
+        async function showAllTasks(){showScreen('tasks-list-view');const list=document.getElementById('all-tasks-list');const data=await api('/api/tasks-list');list.innerHTML=data.tasks.map(t=>'<div class="task-list-item"><span class="num">['+t.num+']</span>'+t.desc+'</div>').join('')}
+        async function loadTask(){const data=await api('/api/task');if(data.error){showMenu();return}document.getElementById('stat-progress').textContent=data.num+' / '+data.total;document.getElementById('stat-correct').textContent=data.correct;document.getElementById('stat-skipped').textContent=data.skipped;const card=document.getElementById('task-card');card.innerHTML='<div class="task-desc">'+data.desc+'</div><div class="answer-area"><input type="text" class="answer-input" id="answer-input" placeholder="Введите триггер..." autocomplete="off" autofocus><button class="btn btn-primary" id="submit-btn" onclick="checkAnswer()">&#x27A1; Проверить</button></div><div class="actions"><button class="btn btn-secondary" onclick="showHint()">&#x1F4A1; Подсказка</button><button class="btn btn-secondary" onclick="skipTask()">&#x23F8; Показать ответ</button></div><div id="feedback" class="feedback"></div>';const input=document.getElementById('answer-input');input.focus();input.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer()})}
+        async function checkAnswer(){const input=document.getElementById('answer-input');const answer=input.value.trim();if(!answer)return;const data=await api('/api/check','POST',{answer});const feedback=document.getElementById('feedback');if(data.correct){feedback.className='feedback feedback-success show';feedback.innerHTML='&#x2705; Верно!';input.disabled=true;document.getElementById('submit-btn').disabled=true;setTimeout(async()=>{const next=await api('/api/next');if(next.done)showResults(next);else loadTask()},1500)}else{feedback.className='feedback feedback-error show';feedback.innerHTML='&#x274C; Неверно. Попробуйте еще раз.';input.value='';input.focus()}}
+        async function showHint(){const data=await api('/api/hint');const feedback=document.getElementById('feedback');feedback.className='feedback feedback-hint show';feedback.innerHTML='<strong>&#x1F4A1; Подсказка:</strong> '+data.hint}
+        async function skipTask(){const data=await api('/api/skip');const feedback=document.getElementById('feedback');feedback.className='feedback feedback-answer show';feedback.innerHTML='<strong>&#x23F8; Правильный ответ:</strong><code>'+data.example+'</code><div style="margin-top:8px;font-size:0.9rem">&#x1F4A1; '+data.hint+'</div>';document.getElementById('answer-input').disabled=true;document.getElementById('submit-btn').disabled=true;setTimeout(async()=>{const next=await api('/api/next');if(next.done)showResults(next);else loadTask()},3000)}
+        async function quitTraining(){await api('/api/quit');showMenu()}
+        function showResults(data){document.getElementById('result-correct').textContent=data.correct;document.getElementById('result-skipped').textContent=data.skipped;document.getElementById('result-total').textContent=data.total;showScreen('results-screen')}
+    </script>
+</body>
+</html>
