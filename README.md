@@ -24,3 +24,9 @@ docker stop zabtrain && docker rm zabtrain
 pip install -r requirements.txt
 python app.py
 ```
+
+## Запуск через shell
+```bash
+chmod +x Zabtrain.sh
+./Zabtrain.sh
+```
